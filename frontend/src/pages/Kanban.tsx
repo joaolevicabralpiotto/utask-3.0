@@ -1,180 +1,139 @@
 import { useEffect, useState } from 'react';
+import type { CSSProperties, ReactNode } from 'react';
+import { 
+  DndContext, 
+  closestCorners, 
+  PointerSensor, 
+  useSensor, 
+  useSensors,
+  useDroppable,
+  DragOverlay, // Adicionado para suavidade total
+  defaultDropAnimationSideEffects
+} from '@dnd-kit/core';
+import type { DragEndEvent, DragStartEvent } from '@dnd-kit/core'; 
+import { 
+  SortableContext, 
+  verticalListSortingStrategy 
+} from '@dnd-kit/sortable';
 import api from '../services/api';
 import { DailyPhrase } from '../components/DailyPhrase';
 import { NewCardForm } from '../components/NewCardForm';
+import { SortableCard } from '../components/SortableCard';
 import { toast } from 'react-toastify';
 
-interface Card {
-  id: number;
-  title: string;
-  content: string;
-  status: 'todo' | 'doing' | 'done';
+function DroppableColumn({ status, children }: { status: string; children: ReactNode }) {
+  const { setNodeRef } = useDroppable({ id: status });
+  return <div ref={setNodeRef} style={{ minHeight: '500px', width: '100%' }}>{children}</div>;
 }
 
 export function Kanban() {
-  const [cards, setCards] = useState<Card[]>([]);
+  const [cards, setCards] = useState<any[]>([]);
+  const [activeCard, setActiveCard] = useState<any>(null); // Estado para o card sendo arrastado
 
-  async function loadCards() {
+  const sensors = useSensors(
+    useSensor(PointerSensor, { activationConstraint: { distance: 3 } }) // Distância curta para resposta imediata
+  );
+
+  const loadCards = async () => {
     try {
-      const response = await api.get('/cards');
-      setCards(response.data);
-    } catch (error) {
-      toast.error("Erro ao carregar seus cards.");
+      const res = await api.get('/cards');
+      setCards(res.data);
+    } catch { toast.error("Erro ao carregar cards."); }
+  };
+
+  useEffect(() => { loadCards(); }, []);
+
+  // Quando o arrasto começa
+  function handleDragStart(event: DragStartEvent) {
+    const card = cards.find(c => c.id === event.active.id);
+    setActiveCard(card);
+  }
+
+  async function handleDragEnd(event: DragEndEvent) {
+    const { active, over } = event;
+    setActiveCard(null); // Limpa o card ativo
+
+    if (!over) return;
+
+    const activeId = active.id;
+    const overId = over.id;
+    const draggedCard = cards.find(c => c.id === activeId);
+
+    let newStatus = overId as string;
+    const targetCard = cards.find(c => c.id === overId);
+    if (targetCard) newStatus = targetCard.status;
+
+    if (draggedCard && ['todo', 'doing', 'done'].includes(newStatus) && newStatus !== draggedCard.status) {
+      try {
+        setCards(prev => prev.map(c => c.id === activeId ? { ...c, status: newStatus as any } : c));
+        await api.put(`/cards/${activeId}`, { status: newStatus });
+        toast.success("Movido!");
+      } catch {
+        toast.error("Erro ao salvar.");
+        loadCards();
+      }
     }
   }
 
-  useEffect(() => {
-    loadCards();
-  }, []);
-
-  // --- FUNÇÃO: Atualizar Status (Mover Card) ---
-  async function handleUpdateStatus(id: number, newStatus: string) {
-    try {
-      // Faz o PUT para alterar apenas o status
-      await api.put(`/cards/${id}`, { status: newStatus });
-      
-      toast.info(`Card movido para ${newStatus}!`);
-      loadCards(); // Recarrega a tela com o card na coluna nova
-    } catch (error) {
-      toast.error("Erro ao mover o card.");
-    }
-  }
-
-  async function handleDeleteCard(id: number) {
-    if (!window.confirm("Tem certeza que deseja excluir este card?")) {
-      return;
-    }
-    try {
-      await api.delete(`/cards/${id}`);
-      toast.success("Card removido!");
-      loadCards();
-    } catch (error) {
-      toast.error("Erro ao excluir o card.");
-    }
-  }
-
-  const todoCards = cards.filter(card => card.status === 'todo');
-  const doingCards = cards.filter(card => card.status === 'doing');
-  const doneCards = cards.filter(card => card.status === 'done');
+  const renderColumn = (title: string, status: 'todo' | 'doing' | 'done', emoji: string) => (
+    <div style={columnStyle}>
+      <h3 style={columnTitleStyle}>{title} {emoji}</h3>
+      <SortableContext id={status} items={cards.filter(c => c.status === status).map(c => c.id)} strategy={verticalListSortingStrategy}>
+        <DroppableColumn status={status}>
+          {cards.filter(c => c.status === status).map(card => (
+            <SortableCard key={card.id} card={card} onDelete={loadCards} onMove={loadCards} />
+          ))}
+        </DroppableColumn>
+      </SortableContext>
+    </div>
+  );
 
   return (
-    <div style={{ padding: '20px' }}>
+    <div style={containerStyle}>
       <DailyPhrase />
+      <NewCardForm onCardCreated={loadCards} />
       
-      <div style={{ maxWidth: '400px', margin: '0 auto' }}>
-        <NewCardForm onCardCreated={loadCards} />
-      </div>
-
-      <div style={{ display: 'flex', gap: '20px', justifyContent: 'center' }}>
-        
-        {/* Coluna: A Fazer */}
-        <div className="kanban-column" style={columnStyle}>
-          <h3>A Fazer 📌</h3>
-          {todoCards.map(card => (
-            <div key={card.id} style={cardStyle}>
-              <h4>{card.title}</h4>
-              <p>{card.content}</p>
-              <div style={actionsContainerStyle}>
-                <button 
-                  onClick={() => handleUpdateStatus(card.id, 'doing')}
-                  style={moveButtonStyle}
-                >
-                  ▶ Fazendo
-                </button>
-                <button onClick={() => handleDeleteCard(card.id)} style={deleteButtonStyle}>
-                  Excluir
-                </button>
-              </div>
-            </div>
-          ))}
+      <DndContext 
+        sensors={sensors} 
+        collisionDetection={closestCorners} 
+        onDragStart={handleDragStart}
+        onDragEnd={handleDragEnd}
+      >
+        <div style={boardStyle}>
+          {renderColumn('A Fazer', 'todo', '📌')}
+          {renderColumn('Fazendo', 'doing', '🔨')}
+          {renderColumn('Feito', 'done', '✅')}
         </div>
 
-        {/* Coluna: Fazendo */}
-        <div className="kanban-column" style={columnStyle}>
-          <h3>Fazendo 🔨</h3>
-          {doingCards.map(card => (
-            <div key={card.id} style={cardStyle}>
-              <h4>{card.title}</h4>
-              <p>{card.content}</p>
-              <div style={actionsContainerStyle}>
-                <button onClick={() => handleUpdateStatus(card.id, 'todo')} style={moveButtonStyle}>
-                  ◀ Voltar
-                </button>
-                <button onClick={() => handleUpdateStatus(card.id, 'done')} style={moveButtonStyle}>
-                  ✔ Finalizar
-                </button>
-                <button onClick={() => handleDeleteCard(card.id)} style={deleteButtonStyle}>
-                  Excluir
-                </button>
-              </div>
+        {/* O DragOverlay é o que faz o card "grudar" no mouse sem tremer */}
+        <DragOverlay dropAnimation={{
+          sideEffects: defaultDropAnimationSideEffects({ styles: { active: { opacity: '0.5' } } })
+        }}>
+          {activeCard ? (
+            <div style={overlayCardStyle}>
+              <h4>{activeCard.title}</h4>
+              <p>{activeCard.content}</p>
             </div>
-          ))}
-        </div>
-
-        {/* Coluna: Feito */}
-        <div className="kanban-column" style={columnStyle}>
-          <h3>Feito ✅</h3>
-          {doneCards.map(card => (
-            <div key={card.id} style={cardStyle}>
-              <h4>{card.title}</h4>
-              <p>{card.content}</p>
-              <div style={actionsContainerStyle}>
-                <button onClick={() => handleUpdateStatus(card.id, 'doing')} style={moveButtonStyle}>
-                  ↺ Reabrir
-                </button>
-                <button onClick={() => handleDeleteCard(card.id)} style={deleteButtonStyle}>
-                  Excluir
-                </button>
-              </div>
-            </div>
-          ))}
-        </div>
-
-      </div>
+          ) : null}
+        </DragOverlay>
+      </DndContext>
     </div>
   );
 }
 
-// --- ESTILOS ---
-
-const columnStyle: React.CSSProperties = {
-  background: '#f4f4f4',
+// Estilos extras para o "fantasma" do card
+const overlayCardStyle: CSSProperties = {
+  backgroundColor: 'var(--bg-primary)',
+  padding: '15px',
   borderRadius: '8px',
-  width: '300px',
-  minHeight: '400px',
-  padding: '10px'
+  boxShadow: '0 10px 15px -3px rgba(0, 0, 0, 0.5)',
+  border: '2px solid var(--accent-color)',
+  cursor: 'grabbing',
+  width: '310px', // Um pouco menor que a coluna
+  opacity: 0.9
 };
 
-const cardStyle: React.CSSProperties = {
-  background: '#fff',
-  borderRadius: '4px',
-  padding: '10px',
-  marginBottom: '10px',
-  boxShadow: '0 2px 4px rgba(0,0,0,0.1)'
-};
-
-const actionsContainerStyle: React.CSSProperties = {
-  display: 'flex',
-  gap: '8px',
-  marginTop: '10px',
-  flexWrap: 'wrap'
-};
-
-const moveButtonStyle: React.CSSProperties = {
-  fontSize: '11px',
-  cursor: 'pointer',
-  padding: '4px 8px',
-  borderRadius: '4px',
-  border: '1px solid #ccc',
-  background: '#f9f9f9'
-};
-
-const deleteButtonStyle: React.CSSProperties = {
-  color: '#d93025',
-  border: 'none',
-  background: 'none',
-  cursor: 'pointer',
-  fontSize: '11px',
-  fontWeight: 'bold',
-  marginLeft: 'auto'
-};
+const containerStyle: CSSProperties = { padding: '40px 20px', maxWidth: '1200px', margin: '0 auto' };
+const boardStyle: CSSProperties = { display: 'flex', gap: '20px', justifyContent: 'center', flexWrap: 'wrap' };
+const columnStyle: CSSProperties = { background: 'var(--bg-secondary)', borderRadius: '12px', width: '350px', minHeight: '600px', padding: '20px', border: '1px solid var(--border-color)' };
+const columnTitleStyle: CSSProperties = { textAlign: 'center', color: 'var(--text-primary)', marginBottom: '15px' };

@@ -1,4 +1,5 @@
-import { createContext, useState, ReactNode } from 'react';
+import { createContext, useState } from 'react';
+import type { ReactNode } from 'react';
 import api from '../services/api'; // Importando sua config do Axios
 
 // Definição dos dados do usuário

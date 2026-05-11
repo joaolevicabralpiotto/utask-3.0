@@ -1,4 +1,5 @@
-import { useState, FormEvent } from 'react';
+import { useState } from 'react';
+import type { FormEvent } from 'react';
 import api from '../services/api';
 import { toast } from 'react-toastify'; // Usando Toast conforme sugerido [2]
 

@@ -1,5 +1,4 @@
 import { useEffect, useState } from 'react';
-import api from '../services/api'; // Você pode usar o Axios para chamadas externas também
 
 export function DailyPhrase() {
   const [phrase, setPhrase] = useState("Carregando frase do dia...");

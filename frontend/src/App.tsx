@@ -1,32 +1,37 @@
-import { useContext } from 'react';
+import { useContext, useState } from 'react';
 import { AuthContext } from './contexts/AuthContext';
 import { Login } from './pages/Login';
-import { Kanban } from './pages/Kanban'; // 1. Importa a nova página
+import { Register } from './pages/Register';
+import { Kanban } from './pages/Kanban';
 import { Header } from './components/Header';
 import { Footer } from './components/Footer';
 import { ToastContainer } from 'react-toastify';
-import 'react-toastify/dist/ReactToastify.css'; // Lembre-se de usar o nome correto do CSS aqui
+// IMPORT CORRIGIDO ABAIXO:
+import 'react-toastify/dist/ReactToastify.css'; 
 
 function App() {
-  // Pegamos a informação se o usuário está logado
   const { signed } = useContext(AuthContext);
+  const [isLoginView, setIsLoginView] = useState(true);
 
   return (
     <>
-      <ToastContainer autoClose={3000} />
+      {/* O ToastContainer deve ser configurado aqui */}
+      <ToastContainer autoClose={3000} theme="colored" />
       
-      {/* Lógica de Decisão: */}
       {signed ? (
-        // Se estiver LOGADO, mostra isso:
-        <>
+        <div style={{ minHeight: '100vh', display: 'flex', flexDirection: 'column' }}>
           <Header />
-
-          <Kanban /> 
+          <main style={{ flex: 1 }}>
+            <Kanban />
+          </main>
           <Footer />
-        </>
+        </div>
       ) : (
-        // Se NÃO estiver logado, mostra isso:
-        <Login />
+        isLoginView ? (
+          <Login onSwitchToRegister={() => setIsLoginView(false)} />
+        ) : (
+          <Register onSwitchToLogin={() => setIsLoginView(true)} />
+        )
       )}
     </>
   );

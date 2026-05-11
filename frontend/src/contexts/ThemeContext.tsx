@@ -1,4 +1,5 @@
-import { createContext, useState, ReactNode, useContext } from 'react';
+import { createContext, useContext, useState } from 'react';
+import type { ReactNode } from 'react';
 
 // Definimos os tipos do nosso tema [5]
 interface ThemeContextData {
