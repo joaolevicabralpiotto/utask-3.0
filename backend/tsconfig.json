@@ -1,0 +1,25 @@
+{
+  "compilerOptions": {
+    /* Layout do Projeto */
+    "target": "ES2022",
+    "module": "NodeNext",
+    "moduleResolution": "NodeNext",
+    "rootDir": "./src",
+    "outDir": "./dist",
+
+    /* Interoperabilidade e Segurança */
+    "esModuleInterop": true,
+    "forceConsistentCasingInFileNames": true,
+    "strict": true,
+    "skipLibCheck": true,
+
+    /* OBRIGATÓRIO PARA TYPEORM (Banco de Dados) */
+    "experimentalDecorators": true,
+    "emitDecoratorMetadata": true,
+
+    /* Suporte para Node moderno */
+    "moduleDetection": "force"
+  },
+  "include": ["src/**/*"],
+  "exclude": ["node_modules"]
+}
