@@ -1,5 +1,5 @@
 import { useState } from 'react';
-import type { FormEvent } from 'react';
+import type { CSSProperties, FormEvent } from 'react';
 import api from '../services/api';
 import { toast } from 'react-toastify'; // Usando Toast conforme sugerido [2]
 
@@ -35,32 +35,53 @@ export function NewCardForm({ onCardCreated }: NewCardFormProps) {
 
   return (
     <form onSubmit={handleCreateCard} style={formStyle}>
-      <input 
-        type="text" 
-        placeholder="Título da tarefa" 
-        value={title}
-        onChange={e => setTitle(e.target.value)}
-        required
-      />
-      <textarea 
-        placeholder="Descrição (opcional)" 
-        value={content}
-        onChange={e => setContent(e.target.value)}
-      />
-      <button type="submit" disabled={loading}>
+      <input type="text" placeholder="Título da tarefa" value={title} onChange={(e) => setTitle(e.target.value)} required style={inputStyle} />
+      <textarea placeholder="Descrição (opcional)" value={content} onChange={(e) => setContent(e.target.value)} style={textareaStyle} rows={3} />
+      <button type="submit" disabled={loading} style={submitBtnStyle}>
         {loading ? 'Criando...' : 'Adicionar Card'}
       </button>
     </form>
   );
 }
 
-const formStyle: React.CSSProperties = {
+const formStyle: CSSProperties = {
   display: 'flex',
   flexDirection: 'column',
-  gap: '10px',
-  marginBottom: '30px',
-  padding: '20px',
-  background: '#fff',
-  borderRadius: '8px',
-  boxShadow: '0 2px 10px rgba(0,0,0,0.1)'
+  gap: '12px',
+  marginBottom: '28px',
+  padding: '22px',
+  background: 'var(--bg-card)',
+  borderRadius: '14px',
+  border: '1px solid var(--border-color)',
+  boxShadow: 'var(--card-shadow)',
+  fontFamily: 'var(--font-sans)'
+};
+
+const inputStyle: CSSProperties = {
+  padding: '12px 14px',
+  borderRadius: '10px',
+  border: '1px solid var(--border-color)',
+  background: 'var(--input-bg)',
+  color: 'var(--text-primary)',
+  fontFamily: 'var(--font-sans)',
+  fontSize: '1rem'
+};
+
+const textareaStyle: CSSProperties = {
+  ...inputStyle,
+  resize: 'vertical',
+  minHeight: '88px'
+};
+
+const submitBtnStyle: CSSProperties = {
+  padding: '14px 20px',
+  borderRadius: '999px',
+  border: 'none',
+  background: 'var(--color-primary)',
+  color: '#fff',
+  fontWeight: 700,
+  fontFamily: 'var(--font-sans)',
+  cursor: 'pointer',
+  fontSize: '1rem',
+  boxShadow: '0 2px 10px rgba(72, 144, 245, 0.35)'
 };

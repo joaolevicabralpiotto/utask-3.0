@@ -61,6 +61,7 @@
   --accent-color: var(--color-primary);
   --error-color: var(--color-error);
   --error-soft: var(--color-error-soft);
+  --card-bg: var(--bg-card);
 
   /* Inputs (GUIA: superfícies claras; dark col. 3 — #FAFAFA) */
   --input-bg: #ffffff;
@@ -117,6 +118,7 @@
 
   --accent-color: var(--color-primary);
   --error-color: var(--color-error);
+  --card-bg: var(--bg-card);
 
   --input-bg: #fafafa;
   --input-border: var(--color-navy);

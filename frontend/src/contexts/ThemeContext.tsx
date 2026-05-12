@@ -19,9 +19,7 @@ export function ThemeProvider({ children }: { children: ReactNode }) {
 
   return (
     <ThemeContext.Provider value={{ theme, toggleTheme }}>
-      <div className={theme}> {/* Esta div aplicará a classe CSS globalmente */}
-        {children}
-      </div>
+      <div data-theme={theme}>{children}</div>
     </ThemeContext.Provider>
   );
 }
