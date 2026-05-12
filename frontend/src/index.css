@@ -52,6 +52,7 @@
   --color-error-soft: #ffafaf;
   --color-error: #df0000;
   --color-primary: #4890f5;
+  --primary-blue: var(--color-primary);
   --color-blue-medium: #226ed8;
   --color-link: #226ed8;
   --color-blue-dark: #114fa7;
@@ -111,6 +112,7 @@
   --color-error-soft: #ffafaf;
   --color-error: #ffafaf;
   --color-primary: #4890f5;
+  --primary-blue: var(--color-primary);
   --color-blue-medium: #333333;
   --color-link: #226ed8;
   --color-blue-dark: #111111;
