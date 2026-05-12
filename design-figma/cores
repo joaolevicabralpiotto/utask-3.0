@@ -1,0 +1,36 @@
+GUIA DE CORES - uTask 3.0
+
+--- PALETA GERAL ---
+Light Mode | Dark Mode
+-----------------------
+#FFFFFF    | #3D3D3D
+#FFFFFF    | #535353
+#FFFFFF    | #FAFAFA
+#FAFAFA    | #222222
+#EEEEEE    | #333333
+#C4C4C4    | #515151
+           | #2E2E2E
+           | #222222
+#141414    | #FAFAFA
+
+--- TONS DE AMARELO/DESTAQUE ---
+Light Mode | Dark Mode
+-----------------------
+#FFFCEE    | #515151
+#FFF5C0    | #3D3D3D
+#FFE03F    | 
+#FFD569    | #3D3D3D
+#FBB910    | #FFFFFF
+#FBB910    | #222222
+
+--- CORES DE STATUS E ACENTO ---
+Light Mode | Dark Mode
+-----------------------
+#FFAFAF    | #FFAFAF (Rosa/Erro Suave)
+#DF0000    | #FFAFAF (Vermelho Erro)
+#4890F5    | #4890F5 (Azul Primário)
+#226ED8    | #333333 (Azul Médio)
+#226ED8    | #226ED8 (Azul Link)
+#114FA7    | #111111 (Azul Escuro)
+#002D6C    | #5C9DFF (Azul Marinho / Ciano Dark)
+
