@@ -1,13 +1,15 @@
 import { useState } from 'react';
 import type { CSSProperties, FormEvent } from 'react';
 import api from '../services/api';
-import { toast } from 'react-toastify'; // Usando Toast conforme sugerido [2]
+import { toast } from 'react-toastify';
 
 interface NewCardFormProps {
-  onCardCreated: () => void; // Função para avisar o Kanban que um novo card foi criado
+  onCardCreated: () => void;
+  /** Quando usado dentro do modal do Kanban, sem borda/sombra duplicada */
+  variant?: 'default' | 'modal';
 }
 
-export function NewCardForm({ onCardCreated }: NewCardFormProps) {
+export function NewCardForm({ onCardCreated, variant = 'default' }: NewCardFormProps) {
   const [title, setTitle] = useState('');
   const [content, setContent] = useState('');
   const [loading, setLoading] = useState(false);
@@ -17,34 +19,53 @@ export function NewCardForm({ onCardCreated }: NewCardFormProps) {
     setLoading(true);
 
     try {
-      // Enviando o POST para a rota que criamos no backend
       await api.post('/cards', { title, content });
-      
-      toast.success("Card criado com sucesso!"); // [3]
+
+      toast.success('Card criado com sucesso!');
       setTitle('');
       setContent('');
-      
-      // Avisa o componente pai (Kanban) para recarregar a lista
+
       onCardCreated();
-    } catch (error) {
-      toast.error("Erro ao criar o card.");
+    } catch {
+      toast.error('Erro ao criar o card.');
     } finally {
       setLoading(false);
     }
   }
 
+  const isModal = variant === 'modal';
+
   return (
-    <form onSubmit={handleCreateCard} style={formStyle}>
-      <input type="text" placeholder="Título da tarefa" value={title} onChange={(e) => setTitle(e.target.value)} required style={inputStyle} />
-      <textarea placeholder="Descrição (opcional)" value={content} onChange={(e) => setContent(e.target.value)} style={textareaStyle} rows={3} />
+    <form onSubmit={handleCreateCard} style={isModal ? formModalStyle : formDefaultStyle}>
+      <label style={labelStyle}>
+        Título *
+        <input
+          type="text"
+          placeholder="Título da tarefa"
+          value={title}
+          onChange={(e) => setTitle(e.target.value)}
+          required
+          style={inputStyle}
+        />
+      </label>
+      <label style={labelStyle}>
+        Descrição
+        <textarea
+          placeholder="Descrição (opcional)"
+          value={content}
+          onChange={(e) => setContent(e.target.value)}
+          style={textareaStyle}
+          rows={4}
+        />
+      </label>
       <button type="submit" disabled={loading} style={submitBtnStyle}>
-        {loading ? 'Criando...' : 'Adicionar Card'}
+        {loading ? 'Criando...' : 'Criar task'}
       </button>
     </form>
   );
 }
 
-const formStyle: CSSProperties = {
+const formDefaultStyle: CSSProperties = {
   display: 'flex',
   flexDirection: 'column',
   gap: '12px',
@@ -57,6 +78,28 @@ const formStyle: CSSProperties = {
   fontFamily: 'var(--font-sans)'
 };
 
+const formModalStyle: CSSProperties = {
+  display: 'flex',
+  flexDirection: 'column',
+  gap: '16px',
+  margin: 0,
+  padding: 0,
+  background: 'transparent',
+  border: 'none',
+  boxShadow: 'none',
+  fontFamily: 'var(--font-sans)'
+};
+
+const labelStyle: CSSProperties = {
+  display: 'flex',
+  flexDirection: 'column',
+  gap: '8px',
+  fontSize: '0.875rem',
+  fontWeight: 600,
+  color: 'var(--text-primary)',
+  textAlign: 'left'
+};
+
 const inputStyle: CSSProperties = {
   padding: '12px 14px',
   borderRadius: '10px',
@@ -64,13 +107,15 @@ const inputStyle: CSSProperties = {
   background: 'var(--input-bg)',
   color: 'var(--text-primary)',
   fontFamily: 'var(--font-sans)',
-  fontSize: '1rem'
+  fontSize: '1rem',
+  width: '100%',
+  boxSizing: 'border-box'
 };
 
 const textareaStyle: CSSProperties = {
   ...inputStyle,
   resize: 'vertical',
-  minHeight: '88px'
+  minHeight: '100px'
 };
 
 const submitBtnStyle: CSSProperties = {
@@ -83,5 +128,6 @@ const submitBtnStyle: CSSProperties = {
   fontFamily: 'var(--font-sans)',
   cursor: 'pointer',
   fontSize: '1rem',
-  boxShadow: '0 2px 10px rgba(72, 144, 245, 0.35)'
+  boxShadow: '0 2px 10px rgba(72, 144, 245, 0.35)',
+  marginTop: '4px'
 };

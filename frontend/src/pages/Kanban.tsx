@@ -27,13 +27,10 @@ function DroppableColumn({ status, children }: { status: string; children: React
   );
 }
 
-function scrollToNewTaskForm() {
-  document.getElementById('nova-task-form')?.scrollIntoView({ behavior: 'smooth', block: 'start' });
-}
-
 export function Kanban() {
   const [cards, setCards] = useState<any[]>([]);
   const [activeCard, setActiveCard] = useState<any>(null);
+  const [createModalOpen, setCreateModalOpen] = useState(false);
 
   const sensors = useSensors(useSensor(PointerSensor, { activationConstraint: { distance: 3 } }));
 
@@ -49,6 +46,20 @@ export function Kanban() {
   useEffect(() => {
     loadCards();
   }, []);
+
+  useEffect(() => {
+    if (!createModalOpen) return;
+    const onKey = (e: KeyboardEvent) => {
+      if (e.key === 'Escape') setCreateModalOpen(false);
+    };
+    window.addEventListener('keydown', onKey);
+    const prev = document.body.style.overflow;
+    document.body.style.overflow = 'hidden';
+    return () => {
+      window.removeEventListener('keydown', onKey);
+      document.body.style.overflow = prev;
+    };
+  }, [createModalOpen]);
 
   function handleDragStart(event: DragStartEvent) {
     const card = cards.find((c) => c.id === event.active.id);
@@ -88,7 +99,12 @@ export function Kanban() {
       <div style={columnHeaderRowStyle}>
         <h3 style={columnHeadingStyle}>{title}</h3>
         {showAdd ? (
-          <button type="button" onClick={scrollToNewTaskForm} style={columnAddBtnStyle} aria-label="Nova task">
+          <button
+            type="button"
+            onClick={() => setCreateModalOpen(true)}
+            style={columnAddBtnStyle}
+            aria-label="Nova task"
+          >
             +
           </button>
         ) : (
@@ -116,20 +132,18 @@ export function Kanban() {
       <div style={innerMaxStyle}>
         <DailyPhrase />
 
-        <div id="nova-task-form">
-          <NewCardForm onCardCreated={loadCards} />
-        </div>
-
         <DndContext
           sensors={sensors}
           collisionDetection={closestCorners}
           onDragStart={handleDragStart}
           onDragEnd={handleDragEnd}
         >
-          <div style={boardStyle}>
-            {renderColumn('A fazer', 'todo', true)}
-            {renderColumn('Em andamento', 'doing', false)}
-            {renderColumn('Feito', 'done', false)}
+          <div style={boardWrapStyle}>
+            <div style={boardStyle}>
+              {renderColumn('A fazer', 'todo', true)}
+              {renderColumn('Em andamento', 'doing', false)}
+              {renderColumn('Feito', 'done', false)}
+            </div>
           </div>
 
           <DragOverlay
@@ -149,6 +163,43 @@ export function Kanban() {
             ) : null}
           </DragOverlay>
         </DndContext>
+
+        {createModalOpen ? (
+          <div
+            role="presentation"
+            style={modalBackdropStyle}
+            onClick={() => setCreateModalOpen(false)}
+            aria-hidden={!createModalOpen}
+          >
+            <div
+              role="dialog"
+              aria-modal="true"
+              aria-labelledby="kanban-new-task-title"
+              style={modalPanelStyle}
+              onClick={(e) => e.stopPropagation()}
+            >
+              <button
+                type="button"
+                aria-label="Fechar"
+                onClick={() => setCreateModalOpen(false)}
+                style={modalCloseStyle}
+              >
+                ×
+              </button>
+              <h2 id="kanban-new-task-title" style={modalTitleStyle}>
+                Nova Task
+              </h2>
+              <div style={modalTitleUnderline} />
+              <NewCardForm
+                variant="modal"
+                onCardCreated={() => {
+                  loadCards();
+                  setCreateModalOpen(false);
+                }}
+              />
+            </div>
+          </div>
+        ) : null}
       </div>
     </div>
   );
@@ -180,13 +231,19 @@ const pageStyle: CSSProperties = {
   flex: 1,
   width: '100%',
   backgroundColor: 'var(--bg-secondary)',
-  padding: '28px 20px 48px'
+  padding: '24px 20px 48px'
 };
 
 const innerMaxStyle: CSSProperties = {
   maxWidth: '1180px',
   margin: '0 auto',
-  width: '100%'
+  width: '100%',
+  position: 'relative'
+};
+
+/** Espaço entre Frase do dia e o quadro (header fica no App) */
+const boardWrapStyle: CSSProperties = {
+  marginTop: '24px'
 };
 
 const boardStyle: CSSProperties = {
@@ -245,9 +302,68 @@ const columnAddBtnStyle: CSSProperties = {
 
 const columnBodyStyle: CSSProperties = {
   minHeight: '420px',
-  maxHeight: 'calc(100vh - 320px)',
+  maxHeight: 'calc(100vh - 280px)',
   overflowY: 'auto',
   overflowX: 'hidden',
   width: '100%',
   paddingRight: '4px'
+};
+
+const modalBackdropStyle: CSSProperties = {
+  position: 'fixed',
+  inset: 0,
+  zIndex: 1000,
+  background: 'rgba(20, 20, 20, 0.45)',
+  display: 'flex',
+  alignItems: 'center',
+  justifyContent: 'center',
+  padding: '24px',
+  fontFamily: 'var(--font-sans)'
+};
+
+const modalPanelStyle: CSSProperties = {
+  position: 'relative',
+  width: '100%',
+  maxWidth: '440px',
+  background: 'var(--bg-card)',
+  borderRadius: '20px',
+  boxShadow: 'var(--shadow-md)',
+  border: '1px solid var(--border-color)',
+  padding: '28px 28px 24px',
+  textAlign: 'center'
+};
+
+const modalCloseStyle: CSSProperties = {
+  position: 'absolute',
+  top: '16px',
+  right: '16px',
+  width: 40,
+  height: 40,
+  borderRadius: '50%',
+  border: '2px solid var(--color-primary)',
+  background: 'transparent',
+  color: 'var(--color-primary)',
+  fontSize: '1.5rem',
+  lineHeight: 1,
+  cursor: 'pointer',
+  display: 'flex',
+  alignItems: 'center',
+  justifyContent: 'center',
+  padding: 0
+};
+
+const modalTitleStyle: CSSProperties = {
+  margin: '0 48px 8px 0',
+  fontSize: '1.25rem',
+  fontWeight: 700,
+  color: 'var(--color-primary)',
+  fontFamily: 'var(--font-sans)'
+};
+
+const modalTitleUnderline: CSSProperties = {
+  height: 2,
+  background: 'var(--color-primary)',
+  borderRadius: 1,
+  margin: '0 auto 24px',
+  maxWidth: '120px'
 };
