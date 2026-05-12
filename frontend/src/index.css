@@ -1,95 +1,223 @@
+/* =============================================================================
+   uTask 3.0 — Design tokens (GUIA DE CORES + tipografia Poppins)
+   Tema: use [data-theme='dark'] no container raiz (ThemeContext).
+   ============================================================================= */
+
+/* --- Tipografia --- */
 :root {
-  --bg-primary: #FFFFFF;
-  --bg-secondary: #FAFAFA;
+  --font-sans: 'Poppins', system-ui, -apple-system, 'Segoe UI', sans-serif;
+  --font-weight-light: 300;
+  --font-weight-regular: 400;
+  --font-weight-semibold: 600;
+  --font-weight-bold: 700;
+
+  /* Aliases para compatibilidade com estilos antigos */
+  --heading: var(--font-sans);
+  --mono: ui-monospace, 'Cascadia Code', 'Segoe UI Mono', monospace;
+}
+
+/* =============================================================================
+   LIGHT MODE — paleta geral, amarelos, status e acento (GUIA DE CORES)
+   ============================================================================= */
+:root {
+  /* Paleta geral */
+  --palette-neutral-a: #ffffff;
+  --palette-neutral-b: #ffffff;
+  --palette-neutral-c: #ffffff;
+  --palette-neutral-muted-bg: #fafafa;
+  --palette-neutral-border: #eeeeee;
+  --palette-neutral-border-strong: #c4c4c4;
+  --palette-neutral-extra-dark-only-1: #2e2e2e;
+  --palette-neutral-extra-dark-only-2: #222222;
   --text-primary: #141414;
-  --accent-color: #4890F5;
-  --border-color: #EEEEEE;
-  --card-shadow: 0 4px 6px rgba(0,0,0,0.1);
-  --error-color: #DF0000;
+
+  /* Superfícies semânticas (app) */
+  --bg-primary: #ffffff;
+  --bg-secondary: #fafafa;
+  --bg-card: #ffffff;
+  --bg-elevated: #ffffff;
+  --border-color: #eeeeee;
+  --border-strong: #c4c4c4;
+  --text-muted: #c4c4c4;
+
+  /* Amarelo / destaque */
+  --accent-yellow-cream: #fffcee;
+  --accent-yellow-soft: #fff5c0;
+  --accent-yellow-bright: #ffe03f;
+  --accent-yellow-warm: #ffd569;
+  --accent-yellow-deep: #fbb910;
+  --accent-yellow-deep-alt: #fbb910;
+
+  /* Status e acento */
+  --color-error-soft: #ffafaf;
+  --color-error: #df0000;
+  --color-primary: #4890f5;
+  --color-blue-medium: #226ed8;
+  --color-link: #226ed8;
+  --color-blue-dark: #114fa7;
+  --color-navy: #002d6c;
+
+  /* Compatibilidade com nomes já usados no projeto */
+  --accent-color: var(--color-primary);
+  --error-color: var(--color-error);
+  --error-soft: var(--color-error-soft);
+
+  /* Inputs (GUIA: superfícies claras; dark col. 3 — #FAFAFA) */
+  --input-bg: #ffffff;
+  --input-border: var(--color-blue-medium);
+
+  /* Header / footer — Azul Médio (light); Azul Escuro no dark (#114FA7 | #111111 → uso #114FA7 p/ barra) */
+  --header-footer-bg: #226ed8;
+
+  /* Sombras */
+  --card-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+  --shadow-md: 0 10px 15px -3px rgba(0, 0, 0, 0.1);
+
+  /* Fundos de código / inline */
+  --code-bg: var(--palette-neutral-muted-bg);
+  --text-h: var(--text-primary);
 }
 
+/* =============================================================================
+   DARK MODE — mesmas chaves; valores conforme coluna Dark do GUIA DE CORES
+   ============================================================================= */
 [data-theme='dark'] {
+  --palette-neutral-a: #3d3d3d;
+  --palette-neutral-b: #535353;
+  --palette-neutral-c: #fafafa;
+  --palette-neutral-muted-bg: #222222;
+  --palette-neutral-border: #333333;
+  --palette-neutral-border-strong: #515151;
+  --palette-neutral-extra-dark-only-1: #2e2e2e;
+  --palette-neutral-extra-dark-only-2: #222222;
+  --text-primary: #fafafa;
+
   --bg-primary: #222222;
-  --bg-secondary: #2E2E2E;
-  --text-primary: #FAFAFA;
-  --accent-color: #5C9DFF;
-  --border-color: #444444;
-  --card-shadow: 0 4px 6px rgba(0,0,0,0.4);
-  --error-color: #FFAFAF;
+  --bg-secondary: #2e2e2e;
+  --bg-card: #3d3d3d;
+  --bg-elevated: #535353;
+  --border-color: #333333;
+  --border-strong: #515151;
+  --text-muted: #515151;
+
+  --accent-yellow-cream: #515151;
+  --accent-yellow-soft: #3d3d3d;
+  --accent-yellow-bright: #ffd569;
+  --accent-yellow-warm: #3d3d3d;
+  --accent-yellow-deep: #ffffff;
+  --accent-yellow-deep-alt: #222222;
+
+  --color-error-soft: #ffafaf;
+  --color-error: #ffafaf;
+  --color-primary: #4890f5;
+  --color-blue-medium: #333333;
+  --color-link: #226ed8;
+  --color-blue-dark: #111111;
+  --color-navy: #5c9dff;
+
+  --accent-color: var(--color-primary);
+  --error-color: var(--color-error);
+
+  --input-bg: #fafafa;
+  --input-border: var(--color-navy);
+
+  /* Barra superior/inferior: primário estável no guia; contraste com texto claro */
+  --header-footer-bg: #114fa7;
+
+  --card-shadow: 0 4px 6px rgba(0, 0, 0, 0.4);
+  --shadow-md: 0 10px 15px -3px rgba(0, 0, 0, 0.35);
+
+  --code-bg: #2e2e2e;
+  --text-h: var(--text-primary);
 }
 
-* {
+/* =============================================================================
+   Reset base
+   ============================================================================= */
+*,
+*::before,
+*::after {
   margin: 0;
   padding: 0;
   box-sizing: border-box;
 }
 
-@media (prefers-color-scheme: dark) {
-  :root {
-    --text: #9ca3af;
-    --text-h: #f3f4f6;
-    --bg: #16171d;
-    --border: #2e303a;
-    --code-bg: #1f2028;
-    --accent: #c084fc;
-    --accent-bg: rgba(192, 132, 252, 0.15);
-    --accent-border: rgba(192, 132, 252, 0.5);
-    --social-bg: rgba(47, 48, 58, 0.5);
-    --shadow:
-      rgba(0, 0, 0, 0.4) 0 10px 15px -3px, rgba(0, 0, 0, 0.25) 0 4px 6px -2px;
-  }
-
-  #social .button-icon {
-    filter: invert(1) brightness(2);
-  }
+html {
+  font-family: var(--font-sans);
+  font-weight: var(--font-weight-regular);
+  line-height: 1.5;
+  -webkit-font-smoothing: antialiased;
 }
 
 #root {
-  width: 1126px;
-  max-width: 100%;
-  margin: 0 auto;
-  text-align: center;
-  border-inline: 1px solid var(--border);
   min-height: 100svh;
+  width: 100%;
+  max-width: 100%;
+  margin: 0;
   display: flex;
   flex-direction: column;
-  box-sizing: border-box;
 }
 
 body {
+  min-height: 100svh;
+  margin: 0;
   background-color: var(--bg-primary);
   color: var(--text-primary);
-  font-family: 'Poppins', sans-serif; /* [2] */
-  transition: background-color 0.3s, color 0.3s;
+  font-family: var(--font-sans);
+  font-weight: var(--font-weight-regular);
+  transition: background-color 0.3s ease, color 0.3s ease;
 }
 
+/* Opcional: pesos semânticos sem sobrescrever tudo */
+.font-light {
+  font-weight: var(--font-weight-light);
+}
+.font-regular {
+  font-weight: var(--font-weight-regular);
+}
+.font-semibold {
+  font-weight: var(--font-weight-semibold);
+}
+.font-bold {
+  font-weight: var(--font-weight-bold);
+}
+
+p {
+  margin: 0;
+}
+
+/* Tipografia de demonstração / markdown legado — valores mais neutros */
 h1,
 h2 {
-  font-family: var(--heading);
-  font-weight: 500;
-  color: var(--text-h);
+  font-family: var(--font-sans);
+  font-weight: var(--font-weight-semibold);
+  color: var(--text-primary);
 }
 
 h1 {
-  font-size: 56px;
-  letter-spacing: -1.68px;
-  margin: 32px 0;
-  @media (max-width: 1024px) {
-    font-size: 36px;
-    margin: 20px 0;
+  font-size: 2rem;
+  letter-spacing: -0.02em;
+  margin: 1rem 0;
+}
+
+@media (max-width: 1024px) {
+  h1 {
+    font-size: 1.75rem;
+    margin: 0.75rem 0;
   }
 }
+
 h2 {
-  font-size: 24px;
-  line-height: 118%;
-  letter-spacing: -0.24px;
-  margin: 0 0 8px;
-  @media (max-width: 1024px) {
-    font-size: 20px;
-  }
+  font-size: 1.25rem;
+  line-height: 1.2;
+  letter-spacing: -0.01em;
+  margin: 0 0 0.5rem;
 }
-p {
-  margin: 0;
+
+@media (max-width: 1024px) {
+  h2 {
+    font-size: 1.125rem;
+  }
 }
 
 code,
@@ -97,12 +225,12 @@ code,
   font-family: var(--mono);
   display: inline-flex;
   border-radius: 4px;
-  color: var(--text-h);
+  color: var(--text-primary);
 }
 
 code {
-  font-size: 15px;
-  line-height: 135%;
+  font-size: 0.9375rem;
+  line-height: 1.35;
   padding: 4px 8px;
   background: var(--code-bg);
 }
