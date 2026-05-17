@@ -17,7 +17,7 @@ export function Footer() {
       }}
     >
       <span>© Processo de Trainee Unect Jr.</span>
-      <span>Feito com ❤️ por Seu Nome</span>
+      <span>Feito com ❤️ por João Levi Cabral Piotto</span>
     </footer>
   );
 }

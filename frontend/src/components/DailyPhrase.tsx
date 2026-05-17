@@ -31,12 +31,13 @@ const wrapStyle: CSSProperties = {
   display: 'flex',
   gap: '18px',
   alignItems: 'flex-start',
+  flexShrink: 0,
   backgroundColor: 'var(--bg-card)',
   padding: '22px 26px',
   borderRadius: '16px',
   boxShadow: 'var(--card-shadow)',
   border: '1px solid var(--border-color)',
-  marginBottom: '28px',
+  marginBottom: '16px',
   fontFamily: 'var(--font-sans)'
 };
 

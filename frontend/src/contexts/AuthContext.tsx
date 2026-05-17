@@ -37,8 +37,8 @@ export function AuthProvider({ children }: { children: ReactNode }) {
       console.log("Login realizado com sucesso!", user);
       
     } catch (error) {
-      console.error("Erro ao fazer login:", error);
-      alert("E-mail ou senha incorretos!");
+      console.error('Erro ao fazer login:', error);
+      throw error;
     }
   }
 

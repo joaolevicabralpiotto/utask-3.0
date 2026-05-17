@@ -116,13 +116,15 @@ export function Kanban() {
         items={cards.filter((c) => c.status === status).map((c) => c.id)}
         strategy={verticalListSortingStrategy}
       >
-        <DroppableColumn status={status}>
-          {cards
-            .filter((c) => c.status === status)
-            .map((card) => (
-              <SortableCard key={card.id} card={card} onDelete={loadCards} onMove={loadCards} />
-            ))}
-        </DroppableColumn>
+        <div style={columnListWrapStyle}>
+          <DroppableColumn status={status}>
+            {cards
+              .filter((c) => c.status === status)
+              .map((card) => (
+                <SortableCard key={card.id} card={card} onDelete={loadCards} onMove={loadCards} />
+              ))}
+          </DroppableColumn>
+        </div>
       </SortableContext>
     </div>
   );
@@ -138,15 +140,16 @@ export function Kanban() {
           onDragStart={handleDragStart}
           onDragEnd={handleDragEnd}
         >
-          <div style={boardWrapStyle}>
-            <div style={boardStyle}>
-              {renderColumn('A fazer', 'todo', true)}
-              {renderColumn('Em andamento', 'doing', false)}
-              {renderColumn('Feito', 'done', false)}
+          <div style={boardAreaStyle}>
+            <div style={boardWrapStyle}>
+              <div style={boardStyle}>
+                {renderColumn('A fazer', 'todo', true)}
+                {renderColumn('Em andamento', 'doing', false)}
+                {renderColumn('Feito', 'done', false)}
+              </div>
             </div>
-          </div>
 
-          <DragOverlay
+            <DragOverlay
             dropAnimation={{
               sideEffects: defaultDropAnimationSideEffects({
                 styles: { active: { opacity: '0.55' } }
@@ -161,7 +164,8 @@ export function Kanban() {
                 ) : null}
               </div>
             ) : null}
-          </DragOverlay>
+            </DragOverlay>
+          </div>
         </DndContext>
 
         {createModalOpen ? (
@@ -230,39 +234,76 @@ function overlayStyle(status: string): CSSProperties {
 const pageStyle: CSSProperties = {
   flex: 1,
   width: '100%',
-  backgroundColor: 'var(--bg-secondary)',
-  padding: '24px 20px 48px'
+  height: '100%',
+  minHeight: 0,
+  display: 'flex',
+  flexDirection: 'column',
+  overflow: 'hidden',
+  backgroundColor: 'var(--bg-primary)',
+  padding: '16px 20px 12px',
+  boxSizing: 'border-box'
 };
 
 const innerMaxStyle: CSSProperties = {
+  flex: 1,
+  minHeight: 0,
+  display: 'flex',
+  flexDirection: 'column',
+  overflow: 'hidden',
   maxWidth: '1180px',
   margin: '0 auto',
   width: '100%',
   position: 'relative'
 };
 
-/** Espaço entre Frase do dia e o quadro (header fica no App) */
+const boardAreaStyle: CSSProperties = {
+  flex: 1,
+  minHeight: 0,
+  display: 'flex',
+  flexDirection: 'column',
+  overflow: 'hidden'
+};
+
 const boardWrapStyle: CSSProperties = {
-  marginTop: '24px'
+  flex: 1,
+  minHeight: 0,
+  display: 'flex',
+  flexDirection: 'column',
+  overflow: 'hidden',
+  marginTop: '16px'
 };
 
 const boardStyle: CSSProperties = {
+  flex: 1,
+  minHeight: 0,
   display: 'flex',
-  gap: '24px',
+  gap: '20px',
   justifyContent: 'center',
-  alignItems: 'flex-start',
-  flexWrap: 'wrap'
+  alignItems: 'stretch',
+  overflow: 'hidden',
+  width: '100%'
 };
 
 const columnShellStyle: CSSProperties = {
+  display: 'flex',
+  flexDirection: 'column',
+  minHeight: 0,
+  height: '100%',
   backgroundColor: 'var(--palette-neutral-border)',
   borderRadius: '16px',
   border: '1px solid var(--border-color)',
   width: 'min(100%, 340px)',
-  flex: '1 1 300px',
+  flex: '1 1 0',
   maxWidth: '360px',
   padding: '16px 14px 18px',
   boxShadow: '0 1px 3px rgba(0,0,0,0.06)'
+};
+
+const columnListWrapStyle: CSSProperties = {
+  flex: 1,
+  minHeight: 0,
+  display: 'flex',
+  flexDirection: 'column'
 };
 
 const columnHeaderRowStyle: CSSProperties = {
@@ -301,8 +342,8 @@ const columnAddBtnStyle: CSSProperties = {
 };
 
 const columnBodyStyle: CSSProperties = {
-  minHeight: '420px',
-  maxHeight: 'calc(100vh - 280px)',
+  flex: 1,
+  minHeight: 0,
   overflowY: 'auto',
   overflowX: 'hidden',
   width: '100%',

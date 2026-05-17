@@ -41,6 +41,7 @@ export function NewCardForm({ onCardCreated, variant = 'default' }: NewCardFormP
         Título *
         <input
           type="text"
+          className="kanban-field-input"
           placeholder="Título da tarefa"
           value={title}
           onChange={(e) => setTitle(e.target.value)}
@@ -51,6 +52,7 @@ export function NewCardForm({ onCardCreated, variant = 'default' }: NewCardFormP
       <label style={labelStyle}>
         Descrição
         <textarea
+          className="kanban-field-input"
           placeholder="Descrição (opcional)"
           value={content}
           onChange={(e) => setContent(e.target.value)}
@@ -104,8 +106,9 @@ const inputStyle: CSSProperties = {
   padding: '12px 14px',
   borderRadius: '10px',
   border: '1px solid var(--border-color)',
-  background: 'var(--input-bg)',
+  backgroundColor: 'var(--input-bg)',
   color: 'var(--text-primary)',
+  caretColor: 'var(--text-primary)',
   fontFamily: 'var(--font-sans)',
   fontSize: '1rem',
   width: '100%',

@@ -6,8 +6,7 @@ import { Kanban } from './pages/Kanban';
 import { Header } from './components/Header';
 import { Footer } from './components/Footer';
 import { ToastContainer } from 'react-toastify';
-// IMPORT CORRIGIDO ABAIXO:
-import 'react-toastify/dist/ReactToastify.css'; 
+import 'react-toastify/dist/ReactToastify.css';
 
 function App() {
   const { signed } = useContext(AuthContext);
@@ -15,23 +14,37 @@ function App() {
 
   return (
     <>
-      {/* O ToastContainer deve ser configurado aqui */}
       <ToastContainer autoClose={3000} theme="colored" />
-      
+
       {signed ? (
-        <div style={{ minHeight: '100vh', display: 'flex', flexDirection: 'column' }}>
+        <div
+          style={{
+            height: '100vh',
+            maxHeight: '100dvh',
+            display: 'flex',
+            flexDirection: 'column',
+            overflow: 'hidden',
+            backgroundColor: 'var(--bg-primary)'
+          }}
+        >
           <Header />
-          <main style={{ flex: 1 }}>
+          <main
+            style={{
+              flex: 1,
+              minHeight: 0,
+              display: 'flex',
+              flexDirection: 'column',
+              overflow: 'hidden'
+            }}
+          >
             <Kanban />
           </main>
           <Footer />
         </div>
+      ) : isLoginView ? (
+        <Login onSwitchToRegister={() => setIsLoginView(false)} />
       ) : (
-        isLoginView ? (
-          <Login onSwitchToRegister={() => setIsLoginView(false)} />
-        ) : (
-          <Register onSwitchToLogin={() => setIsLoginView(true)} />
-        )
+        <Register onSwitchToLogin={() => setIsLoginView(true)} />
       )}
     </>
   );
